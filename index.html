@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Intelligence Dashboard — eBay Live Data</title>
+    <meta name="description"
+        content="Real-time market intelligence dashboard powered by eBay Browse API. Analyze pricing, competition, and trends.">
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons: Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Charts: Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="light-mode">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <h3>Menganalisis Pasar eBay</h3>
+            <p id="loading-query">Mencari data...</p>
+            <div class="loading-steps">
+                <div class="loading-step" id="step-auth">
+                    <div class="loading-step-dot"></div>
+                    <span>Autentikasi eBay API</span>
+                </div>
+                <div class="loading-step" id="step-fetch">
+                    <div class="loading-step-dot"></div>
+                    <span>Mengambil listing produk</span>
+                </div>
+                <div class="loading-step" id="step-analyze">
+                    <div class="loading-step-dot"></div>
+                    <span>Menganalisis data pasar</span>
+                </div>
+                <div class="loading-step" id="step-ai">
+                    <div class="loading-step-dot"></div>
+                    <span>DeepSeek AI generating insights</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="error-toast">
+        <i data-lucide="alert-circle"></i>
+        <span id="error-message">Error</span>
+    </div>
+
+    <!-- Header -->
+    <header class="top-bar">
+        <div class="logo">
+            <i data-lucide="bar-chart-2"></i>
+            <span>NEXUS<span class="accent">ANALYTICS</span></span>
+        </div>
+        <div class="header-right">
+            <div class="live-badge" id="live-badge">
+                <div class="live-dot"></div>
+                <span>LIVE DATA</span>
+            </div>
+            <div class="live-badge" id="ai-badge"
+                style="background-color: var(--bg-tertiary); color: var(--text-secondary); border-color: var(--border-color);">
+                <span>🤖 AI</span>
+            </div>
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                <i data-lucide="moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="search-container">
+                <div class="search-box">
+                    <i data-lucide="search"></i>
+                    <input id="search-input" type="text" placeholder="Masukkan nama produk (cth: exhaust yamaha r3)">
+                </div>
+                <div class="filters">
+                    <select id="condition-filter" class="filter-select">
+                        <option value="all">Semua Kondisi</option>
+                        <option value="new">Baru</option>
+                        <option value="used">Bekas</option>
+                    </select>
+                    <select id="location-filter" class="filter-select">
+                        <option value="global">Global (US)</option>
+                        <option value="us">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="de">Germany</option>
+                        <option value="au">Australia</option>
+                    </select>
+                    <button id="analyze-btn" class="analyze-btn">
+                        <span class="btn-text">Analisis Pasar</span>
+                        <span class="btn-loading">
+                            <div class="loading-spinner" style="width:18px;height:18px;border-width:2px;"></div>
+                            Memproses...
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="quick-suggestions" id="quick-suggestions">
+                <span class="suggestion-label"><i data-lucide="trending-up" style="width:14px;height:14px"></i>
+                    Trending:</span>
+                <span class="pill-tag pill-shimmer"></span>
+                <span class="pill-tag pill-shimmer"></span>
+                <span class="pill-tag pill-shimmer"></span>
+                <span class="pill-tag pill-shimmer"></span>
+                <span class="pill-tag pill-shimmer"></span>
+            </div>
+        </section>
+
+        <!-- Data Meta Bar -->
+        <div id="data-meta-bar" class="data-meta-bar">
+            <div class="meta-item">
+                <i data-lucide="database" style="width:14px;height:14px"></i>
+                <span>Items Dianalisis:</span>
+                <span class="meta-value" id="meta-total">-</span>
+            </div>
+            <div class="meta-item">
+                <i data-lucide="globe" style="width:14px;height:14px"></i>
+                <span>Marketplace:</span>
+                <span class="meta-value" id="meta-marketplace">-</span>
+            </div>
+            <div class="meta-item">
+                <i data-lucide="clock" style="width:14px;height:14px"></i>
+                <span>Updated:</span>
+                <span class="meta-value" id="meta-timestamp">-</span>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <section class="executive-summary dashboard-section">
+            <div class="summary-card price-card">
+                <div class="card-header">
+                    <i data-lucide="tag"></i>
+                    <h3>Rekomendasi Harga Optimal</h3>
+                </div>
+                <div class="price-display" id="optimal-price">—</div>
+                <div class="price-meta">
+                    <span class="positive" id="price-vs-avg"><i data-lucide="trending-up" size="14"></i> Menunggu
+                        data...</span>
+                    <span id="price-range-info">Klik "Analisis Pasar" untuk memulai</span>
+                </div>
+            </div>
+
+            <div class="summary-card barrier-card">
+                <div class="card-header">
+                    <i data-lucide="shield-alert"></i>
+                    <h3>Entry Barrier</h3>
+                </div>
+                <div class="barrier-meter" id="barrier-gauge" style="--value: 0;">
+                    <!-- SVG Arc Gauge -->
+                    <svg class="barrier-arc" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background arc segments -->
+                        <path class="arc-bg" d="M 20 110 A 80 80 0 0 1 180 110" />
+                        <!-- Zone indicators (Low / Medium / High) -->
+                        <path class="arc-zone arc-zone-low" d="M 20 110 A 80 80 0 0 1 60 38" />
+                        <path class="arc-zone arc-zone-mid" d="M 60 38 A 80 80 0 0 1 140 38" />
+                        <path class="arc-zone arc-zone-high" d="M 140 38 A 80 80 0 0 1 180 110" />
+                        <!-- Needle -->
+                        <line class="arc-needle" x1="100" y1="110" x2="100" y2="40" />
+                        <!-- Center dot -->
+                        <circle class="arc-dot" cx="100" cy="110" r="5" />
+                    </svg>
+                    <!-- Score number -->
+                    <div class="barrier-score-display">
+                        <span class="barrier-score-value" id="barrier-score-value">—</span>
+                        <span class="barrier-score-max">/100</span>
+                    </div>
+                </div>
+                <!-- Level badge -->
+                <div class="barrier-level-row">
+                    <span class="barrier-level-badge" id="barrier-level-badge">Menunggu data</span>
+                </div>
+                <!-- Zone labels -->
+                <div class="barrier-zone-labels">
+                    <span class="zone-label zone-low-label">Rendah</span>
+                    <span class="zone-label zone-mid-label">Sedang</span>
+                    <span class="zone-label zone-high-label">Tinggi</span>
+                </div>
+                <p class="barrier-desc" id="barrier-desc">Menunggu analisis data...</p>
+            </div>
+
+            <div class="summary-card strategy-card">
+                <div class="card-header">
+                    <i data-lucide="lightbulb"></i>
+                    <h3>Top 3 Strategi Aksi</h3>
+                </div>
+                <ul class="strategy-list" id="strategy-list">
+                    <li><i data-lucide="check-circle-2"></i> Klik "Analisis Pasar" untuk mendapatkan strategi berbasis
+                        data real.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- High Impact Focus -->
+        <section class="high-impact-focus dashboard-section" id="high-impact-section">
+            <div class="focus-item">
+                <i data-lucide="calendar"></i>
+                <span>Data Source: <strong>eBay Browse API</strong></span>
+            </div>
+            <div class="focus-item" id="focus-bin">
+                <i data-lucide="shopping-cart"></i>
+                <span>BIN vs Auction: <strong>—</strong></span>
+            </div>
+            <div class="focus-item" id="focus-sellers">
+                <i data-lucide="users"></i>
+                <span>Unique Sellers: <strong>—</strong></span>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <section class="dashboard-grid dashboard-section">
+
+            <!-- Pricing Intelligence -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <i data-lucide="line-chart"></i>
+                    <h3>Pricing Intelligence</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pricingChart"></canvas>
+                </div>
+                <div class="card-insights">
+                    <div class="insight-item">
+                        <span class="label">Harga Rata-rata:</span>
+                        <span class="value" id="insight-avg-price">—</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="label">Harga Median:</span>
+                        <span class="value" id="insight-median-price">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demand & Timing -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <i data-lucide="clock"></i>
+                    <h3>Demand & Timing</h3>
+                </div>
+                <div class="heatmap-container">
+                    <div class="heatmap-grid" id="seasonalityHeatmap">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>Rendah</span>
+                        <div class="legend-bar"></div>
+                        <span>Tinggi</span>
+                    </div>
+                </div>
+                <div class="card-insights">
+                    <div class="insight-item">
+                        <span class="label">Hari Optimal:</span>
+                        <span class="value" id="insight-optimal-day">Minggu</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="label">Jam Optimal:</span>
+                        <span class="value" id="insight-optimal-time">19:00 - 21:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitive Intelligence -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <i data-lucide="users"></i>
+                    <h3>Competitive Intelligence</h3>
+                </div>
+                <div class="chart-container small-chart">
+                    <canvas id="competitionChart"></canvas>
+                </div>
+                <div class="card-insights">
+                    <div class="insight-item">
+                        <span class="label">Konsentrasi Pasar:</span>
+                        <span class="value" id="insight-market-concentration">—</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="label">Seller Unik:</span>
+                        <span class="value" id="insight-unique-sellers">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geographic Demand -->
+            <div class="card">
+                <div class="card-header">
+                    <i data-lucide="map-pin"></i>
+                    <h3>Geographic Demand</h3>
+                </div>
+                <div class="geo-list" id="geo-list">
+                    <div class="geo-item">
+                        <span class="region">Menunggu data...</span>
+                        <div class="progress-bar">
+                            <div class="fill" style="width: 0%"></div>
+                        </div>
+                        <span class="percentage">—</span>
+                    </div>
+                </div>
+                <div class="alert-box info" id="geo-alert">
+                    <i data-lucide="info"></i>
+                    <span>Data geografis akan muncul setelah analisis.</span>
+                </div>
+            </div>
+
+            <!-- Keywords & Searchability -->
+            <div class="card">
+                <div class="card-header">
+                    <i data-lucide="search-code"></i>
+                    <h3>Keywords & Searchability</h3>
+                </div>
+                <div class="keyword-section">
+                    <div class="kw-group">
+                        <h4>Power Keywords (dari listing eBay)</h4>
+                        <div class="tags" id="power-keywords">
+                            <span class="tag neutral">Menunggu data...</span>
+                        </div>
+                    </div>
+                    <div class="optimal-title">
+                        <h4>Statistik Kata Kunci:</h4>
+                        <p id="keyword-stats">Analisis kata kunci akan muncul setelah pencarian.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Intelligence -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <i data-lucide="package"></i>
+                    <h3>Product Intelligence</h3>
+                </div>
+                <div class="chart-container small-chart">
+                    <canvas id="variantChart"></canvas>
+                </div>
+                <div class="card-insights">
+                    <div class="insight-item">
+                        <span class="label">Kondisi Dominan:</span>
+                        <span class="value" id="insight-dominant-condition">—</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="label">Varian Teratas:</span>
+                        <span class="value" id="insight-top-variant">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Items from eBay -->
+            <div class="card strategy-conclusion-card">
+                <div class="card-header">
+                    <i data-lucide="layout-grid"></i>
+                    <h3>Sample Listings dari eBay</h3>
+                </div>
+                <div class="sample-items-grid" id="sample-items">
+                    <p style="color: var(--text-tertiary); grid-column: 1/-1; text-align: center; padding: 24px;">
+                        Listing produk dari eBay akan muncul setelah analisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Strategy & Conclusion (Full Width) -->
+            <div class="card strategy-conclusion-card">
+                <div class="conclusion-header">
+                    <h3>Strategy & Conclusion</h3>
+                    <div class="opportunity-score">
+                        <div class="score-circle" id="opp-score-circle" style="--score: 0;">
+                            <span id="opp-score-value">—</span>
+                        </div>
+                        <div class="score-label">Opportunity Score</div>
+                    </div>
+                </div>
+
+                <div class="conclusion-grid">
+                    <div class="conclusion-col">
+                        <h4><i data-lucide="brain-circuit"></i> Data-Driven Insights</h4>
+                        <ul class="insight-list" id="conclusion-insights">
+                            <li>Klik "Analisis Pasar" untuk mendapatkan insights berbasis data real dari eBay.</li>
+                        </ul>
+                    </div>
+                    <div class="conclusion-col">
+                        <h4><i data-lucide="list-checks"></i> Specific Action Plans</h4>
+                        <ul class="action-list" id="conclusion-actions">
+                            <li>Action plan akan di-generate berdasarkan analisis data real.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="script.js?v=2"></script>
+</body>
+
+</html>
