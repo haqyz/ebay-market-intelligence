@@ -615,10 +615,24 @@ FORMAT: Jawab HANYA dalam format JSON valid berikut, tanpa markdown atau teks ta
     "seasonalityIndex": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     "optimalDay": "<hari terbaik untuk listing>",
     "optimalTime": "<rentang waktu terbaik, misal: 19:00 - 21:00>"
-  }
+  },
+  "dynamicVariants": [
+    {
+      "name": "<nama varian/atribut spesifik, misal: 128GB, Pro Max, Carbon Fiber>",
+      "percentage": <angka 0-100 merepresentasikan estimasi market share>
+    }
+  ]
 }`;
 
-    const userPrompt = `Analisis data pasar eBay berikut dan berikan rekomendasi lengkap:\n${dataSummary}\n\nBerikan 3 strategi utama, 5 insights, dan 5 action plans berdasarkan data di atas. Harga optimal harus berdasarkan analisis distribusi harga dan kompetisi. Hasilkan 'demandAndTiming' dengan estimasi data tren pencarian bulanan (12 bulan, 0.0 - 1.0) dan hari/jam terbaik untuk listing berdasarkan jenis produk ini. Pastikan semua rekomendasi spesifik dan actionable.`;
+    const userPrompt = `Lakukan analisis mendalam untuk produk: "${query}".
+Gunakan data mentah berikut sebagai acuan utama, namun lengkapi dengan pengetahuan pasar e-commerce globalmu.
+
+TUGAS TAMBAHAN: Ekstrak atau perkirakan 6 varian/atribut (seperti model, ukuran, bahan, atau warna) yang paling populer untuk produk "${query}" di pasaran, lalu masukkan ke dalam array "dynamicVariants" beserta persentasenya.
+
+DATA MENTAH:
+${dataSummary}
+
+Berikan 3 strategi utama, 5 insights, dan 5 action plans berdasarkan data di atas. Harga optimal harus berdasarkan analisis distribusi harga dan kompetisi. Hasilkan 'demandAndTiming' dengan estimasi data tren pencarian bulanan (12 bulan, 0.0 - 1.0) dan hari/jam terbaik untuk listing berdasarkan jenis produk ini. Pastikan semua rekomendasi spesifik dan actionable.`;
 
     console.log('🤖 Requesting DeepSeek AI analysis...');
 

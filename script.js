@@ -500,12 +500,21 @@ function updateCharts(data) {
     });
 
     // 3. Variant/Product Intelligence (Horizontal Bar)
-    const variantLabels = data.variants.length > 0
-        ? data.variants.map(v => v.name)
-        : Object.keys(data.conditions);
-    const variantData = data.variants.length > 0
-        ? data.variants.map(v => v.count)
-        : Object.values(data.conditions);
+    let variantLabels = [];
+    let variantData = [];
+    let variantLabelPrefix = 'Jumlah Listing';
+    
+    if (data.ai && data.ai.dynamicVariants && data.ai.dynamicVariants.length > 0) {
+        variantLabels = data.ai.dynamicVariants.map(v => v.name);
+        variantData = data.ai.dynamicVariants.map(v => v.percentage);
+        variantLabelPrefix = 'Market Share (%)';
+    } else if (data.variants && data.variants.length > 0) {
+        variantLabels = data.variants.map(v => v.name);
+        variantData = data.variants.map(v => v.count);
+    } else {
+        variantLabels = Object.keys(data.conditions);
+        variantData = Object.values(data.conditions);
+    }
 
     const ctxVariant = document.getElementById('variantChart').getContext('2d');
     variantChart = new Chart(ctxVariant, {
@@ -513,7 +522,7 @@ function updateCharts(data) {
         data: {
             labels: variantLabels.slice(0, 6),
             datasets: [{
-                label: 'Jumlah Listing',
+                label: variantLabelPrefix,
                 data: variantData.slice(0, 6),
                 backgroundColor: [c.accentPositive, ...c.shades.slice(1, 6)],
                 borderRadius: 4,
