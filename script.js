@@ -506,7 +506,7 @@ function updateCharts(data) {
     // 3. Variant/Product Intelligence (Horizontal Bar)
     let variantLabels = [];
     let variantData = [];
-    let variantLabelPrefix = 'Jumlah Listing';
+    let variantLabelPrefix = 'Listing Count';
     
     if (data.ai && data.ai.dynamicVariants && data.ai.dynamicVariants.length > 0) {
         variantLabels = data.ai.dynamicVariants.map(v => v.name);
