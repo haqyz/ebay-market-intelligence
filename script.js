@@ -353,8 +353,12 @@ function updateDashboard(data, query, location) {
         document.getElementById('insight-dominant-condition').textContent =
             `${dominant[0]} (${Math.round(dominant[1] / data.totalItems * 100)}%)`;
     }
-    if (data.variants.length > 0) {
+    if (data.ai && data.ai.dynamicVariants && data.ai.dynamicVariants.length > 0) {
+        document.getElementById('insight-top-variant').textContent = data.ai.dynamicVariants[0].name;
+    } else if (data.variants.length > 0) {
         document.getElementById('insight-top-variant').textContent = data.variants[0].name;
+    } else {
+        document.getElementById('insight-top-variant').textContent = '-';
     }
 
     // 11. Sample Items
