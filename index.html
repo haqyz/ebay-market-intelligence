@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -27,20 +27,20 @@
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-card">
             <div class="loading-spinner"></div>
-            <h3>Menganalisis Pasar eBay</h3>
-            <p id="loading-query">Mencari data...</p>
+            <h3>Analyzing eBay Market</h3>
+            <p id="loading-query">Fetching data...</p>
             <div class="loading-steps">
                 <div class="loading-step" id="step-auth">
                     <div class="loading-step-dot"></div>
-                    <span>Autentikasi eBay API</span>
+                    <span>Authenticating eBay API</span>
                 </div>
                 <div class="loading-step" id="step-fetch">
                     <div class="loading-step-dot"></div>
-                    <span>Mengambil listing produk</span>
+                    <span>Fetching product listings</span>
                 </div>
                 <div class="loading-step" id="step-analyze">
                     <div class="loading-step-dot"></div>
-                    <span>Menganalisis data pasar</span>
+                    <span>Analyzing market data</span>
                 </div>
                 <div class="loading-step" id="step-ai">
                     <div class="loading-step-dot"></div>
@@ -83,13 +83,13 @@
             <div class="search-container">
                 <div class="search-box">
                     <i data-lucide="search"></i>
-                    <input id="search-input" type="text" placeholder="Masukkan nama produk (cth: exhaust yamaha r3)">
+                    <input id="search-input" type="text" placeholder="Enter product name (e.g., exhaust yamaha r3)">
                 </div>
                 <div class="filters">
                     <select id="condition-filter" class="filter-select">
-                        <option value="all">Semua Kondisi</option>
-                        <option value="new">Baru</option>
-                        <option value="used">Bekas</option>
+                        <option value="all">All Conditions</option>
+                        <option value="new">New</option>
+                        <option value="used">Used</option>
                     </select>
                     <select id="location-filter" class="filter-select">
                         <option value="global">Global (US)</option>
@@ -99,10 +99,10 @@
                         <option value="au">Australia</option>
                     </select>
                     <button id="analyze-btn" class="analyze-btn">
-                        <span class="btn-text">Analisis Pasar</span>
+                        <span class="btn-text">Analyze Market</span>
                         <span class="btn-loading">
                             <div class="loading-spinner" style="width:18px;height:18px;border-width:2px;"></div>
-                            Memproses...
+                            Processing...
                         </span>
                     </button>
                 </div>
@@ -122,7 +122,7 @@
         <div id="data-meta-bar" class="data-meta-bar">
             <div class="meta-item">
                 <i data-lucide="database" style="width:14px;height:14px"></i>
-                <span>Items Dianalisis:</span>
+                <span>Items Analyzed:</span>
                 <span class="meta-value" id="meta-total">-</span>
             </div>
             <div class="meta-item">
@@ -142,13 +142,13 @@
             <div class="summary-card price-card">
                 <div class="card-header">
                     <i data-lucide="tag"></i>
-                    <h3>Rekomendasi Harga Optimal</h3>
+                    <h3>Optimal Price Recommendation</h3>
                 </div>
                 <div class="price-display" id="optimal-price">—</div>
                 <div class="price-meta">
-                    <span class="positive" id="price-vs-avg"><i data-lucide="trending-up" size="14"></i> Menunggu
-                        data...</span>
-                    <span id="price-range-info">Klik "Analisis Pasar" untuk memulai</span>
+                    <span class="positive" id="price-vs-avg"><i data-lucide="trending-up" size="14"></i> Waiting
+                        for data...</span>
+                    <span id="price-range-info">Click "Analyze Market" to start</span>
                 </div>
             </div>
 
@@ -179,25 +179,25 @@
                 </div>
                 <!-- Level badge -->
                 <div class="barrier-level-row">
-                    <span class="barrier-level-badge" id="barrier-level-badge">Menunggu data</span>
+                    <span class="barrier-level-badge" id="barrier-level-badge">Waiting for data...pan>
                 </div>
                 <!-- Zone labels -->
                 <div class="barrier-zone-labels">
-                    <span class="zone-label zone-low-label">Rendah</span>
-                    <span class="zone-label zone-mid-label">Sedang</span>
-                    <span class="zone-label zone-high-label">Tinggi</span>
+                    <span class="zone-label zone-low-label">Low</span>
+                    <span class="zone-label zone-mid-label">Medium</span>
+                    <span class="zone-label zone-high-label">High</span>
                 </div>
-                <p class="barrier-desc" id="barrier-desc">Menunggu analisis data...</p>
+                <p class="barrier-desc" id="barrier-desc">Waiting for data analysis...</p>
             </div>
 
             <div class="summary-card strategy-card">
                 <div class="card-header">
                     <i data-lucide="lightbulb"></i>
-                    <h3>Top 3 Strategi Aksi</h3>
+                    <h3>Top 3 Action Strategies</h3>
                 </div>
                 <ul class="strategy-list" id="strategy-list">
-                    <li><i data-lucide="check-circle-2"></i> Klik "Analisis Pasar" untuk mendapatkan strategi berbasis
-                        data real.</li>
+                    <li><i data-lucide="check-circle-2"></i> Click "Analyze Market" to get data-driven
+                        strategies.</li>
                 </ul>
             </div>
         </section>
@@ -232,11 +232,11 @@
                 </div>
                 <div class="card-insights">
                     <div class="insight-item">
-                        <span class="label">Harga Rata-rata:</span>
+                        <span class="label">Average Price:</span>
                         <span class="value" id="insight-avg-price">—</span>
                     </div>
                     <div class="insight-item">
-                        <span class="label">Harga Median:</span>
+                        <span class="label">Median Price:</span>
                         <span class="value" id="insight-median-price">—</span>
                     </div>
                 </div>
@@ -260,11 +260,11 @@
                 </div>
                 <div class="card-insights">
                     <div class="insight-item">
-                        <span class="label">Hari Optimal:</span>
-                        <span class="value" id="insight-optimal-day">Minggu</span>
+                        <span class="label">Optimal Day:</span>
+                        <span class="value" id="insight-optimal-day">Sunday</span>
                     </div>
                     <div class="insight-item">
-                        <span class="label">Jam Optimal:</span>
+                        <span class="label">Optimal Time:</span>
                         <span class="value" id="insight-optimal-time">19:00 - 21:00</span>
                     </div>
                 </div>
@@ -281,11 +281,11 @@
                 </div>
                 <div class="card-insights">
                     <div class="insight-item">
-                        <span class="label">Konsentrasi Pasar:</span>
+                        <span class="label">Market Concentration:</span>
                         <span class="value" id="insight-market-concentration">—</span>
                     </div>
                     <div class="insight-item">
-                        <span class="label">Seller Unik:</span>
+                        <span class="label">Unique Sellers:</span>
                         <span class="value" id="insight-unique-sellers">—</span>
                     </div>
                 </div>
@@ -299,7 +299,7 @@
                 </div>
                 <div class="geo-list" id="geo-list">
                     <div class="geo-item">
-                        <span class="region">Menunggu data...</span>
+                        <span class="region">Waiting for data...</span>
                         <div class="progress-bar">
                             <div class="fill" style="width: 0%"></div>
                         </div>
@@ -308,7 +308,7 @@
                 </div>
                 <div class="alert-box info" id="geo-alert">
                     <i data-lucide="info"></i>
-                    <span>Data geografis supply akan muncul setelah analisis.</span>
+                    <span>Geographic supply data will appear after analysis.</span>
                 </div>
             </div>
 
@@ -320,7 +320,7 @@
                 </div>
                 <div class="geo-list" id="geo-demand-list">
                     <div class="geo-item">
-                        <span class="region">Menunggu data...</span>
+                        <span class="region">Waiting for data...</span>
                         <div class="progress-bar">
                             <div class="fill" style="width: 0%"></div>
                         </div>
@@ -341,14 +341,14 @@
                 </div>
                 <div class="keyword-section">
                     <div class="kw-group">
-                        <h4>Power Keywords (dari listing eBay)</h4>
+                        <h4>Power Keywords (from eBay listings)</h4>
                         <div class="tags" id="power-keywords">
-                            <span class="tag neutral">Menunggu data...</span>
+                            <span class="tag neutral">Waiting for data...</span>
                         </div>
                     </div>
                     <div class="optimal-title">
-                        <h4>Statistik Kata Kunci:</h4>
-                        <p id="keyword-stats">Analisis kata kunci akan muncul setelah pencarian.</p>
+                        <h4>Keyword Statistics:</h4>
+                        <p id="keyword-stats">Keyword analysis will appear after search.</p>
                     </div>
                 </div>
             </div>
@@ -378,11 +378,11 @@
             <div class="card strategy-conclusion-card">
                 <div class="card-header">
                     <i data-lucide="layout-grid"></i>
-                    <h3>Sample Listings dari eBay</h3>
+                    <h3>Sample Listings from eBay</h3>
                 </div>
                 <div class="sample-items-grid" id="sample-items">
                     <p style="color: var(--text-tertiary); grid-column: 1/-1; text-align: center; padding: 24px;">
-                        Listing produk dari eBay akan muncul setelah analisis.
+                        eBay product listings will appear after analysis.
                     </p>
                 </div>
             </div>
@@ -403,13 +403,13 @@
                     <div class="conclusion-col">
                         <h4><i data-lucide="brain-circuit"></i> Data-Driven Insights</h4>
                         <ul class="insight-list" id="conclusion-insights">
-                            <li>Klik "Analisis Pasar" untuk mendapatkan insights berbasis data real dari eBay.</li>
+                            <li>Click "Analyze Market" to get data-driven insights from eBay.</li>
                         </ul>
                     </div>
                     <div class="conclusion-col">
                         <h4><i data-lucide="list-checks"></i> Specific Action Plans</h4>
                         <ul class="action-list" id="conclusion-actions">
-                            <li>Action plan akan di-generate berdasarkan analisis data real.</li>
+                            <li>Action plan will be generated based on real data analysis.</li>
                         </ul>
                     </div>
                 </div>

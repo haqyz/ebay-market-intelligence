@@ -577,62 +577,62 @@ VARIAN: ${analytics.variants.map(v => `${v.name} (${v.count})`).join(', ')}
 
     const systemPrompt = `Kamu adalah AI Market Intelligence Analyst yang sangat ahli di eBay marketplace. Kamu menganalisis data pasar dan memberikan rekomendasi yang actionable untuk penjual.
 
-BAHASA: Gunakan Bahasa Indonesia yang profesional.
+BAHASA: Use professional English.
 FORMAT: Jawab HANYA dalam format JSON valid berikut, tanpa markdown atau teks tambahan:
 
 {
   "optimalPrice": {
     "value": <number>,
-    "rationale": "<penjelasan singkat kenapa harga ini optimal>"
+    "rationale": "<short explanation why this price is optimal>"
   },
   "entryBarrier": {
     "score": <0-100>,
     "level": "Rendah|Sedang|Tinggi",
-    "description": "<penjelasan singkat>"
+    "description": "<short explanation>"
   },
   "strategies": [
     {
-      "title": "<judul strategi>",
-      "description": "<penjelasan detail dan actionable>"
+      "title": "<strategy title>",
+      "description": "<detailed and actionable explanation>"
     }
   ],
   "insights": [
-    "<insight berbasis data>"
+    "<data-driven insight>"
   ],
   "actionPlan": [
     {
-      "day": "Hari X",
-      "action": "<aksi spesifik>"
+      "day": "Day X",
+      "action": "<specific action>"
     }
   ],
-  "titleSuggestion": "<contoh judul listing optimal untuk SEO eBay>",
+  "titleSuggestion": "<example optimal listing title for eBay SEO>",
   "keywordsToUse": ["<keyword1>", "<keyword2>"],
   "keywordsToAvoid": ["<keyword1>", "<keyword2>"],
-  "riskAssessment": "<penilaian risiko singkat>",
+  "riskAssessment": "<short risk assessment>",
   "opportunityScore": <0-100>,
-  "seasonalTip": "<tips berdasarkan musim/waktu saat ini>",
+  "seasonalTip": "<tips based on current season/time>",
   "demandAndTiming": {
     "seasonalityIndex": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    "optimalDay": "<hari terbaik untuk listing>",
-    "optimalTime": "<rentang waktu terbaik, misal: 19:00 - 21:00>"
+    "optimalDay": "<best day for listing>",
+    "optimalTime": "<best time range, e.g.: 19:00 - 21:00>"
   },
   "dynamicVariants": [
     {
-      "name": "<nama varian/atribut spesifik, misal: 128GB, Pro Max, Carbon Fiber>",
-      "percentage": <angka 0-100 merepresentasikan estimasi market share>
+      "name": "<specific variant/attribute name, e.g.: 128GB, Pro Max, Carbon Fiber>",
+      "percentage": <number 0-100 representing estimated market share>
     }
   ]
 }`;
 
-    const userPrompt = `Lakukan analisis mendalam untuk produk: "${query}".
-Gunakan data mentah berikut sebagai acuan utama, namun lengkapi dengan pengetahuan pasar e-commerce globalmu.
+    const userPrompt = `Perform a deep analysis for product: "${query}".
+Use the following raw data as the primary reference, but supplement with your global e-commerce market knowledge.
 
-TUGAS TAMBAHAN: Ekstrak atau perkirakan 6 varian/atribut (seperti model, ukuran, bahan, atau warna) yang paling populer untuk produk "${query}" di pasaran, lalu masukkan ke dalam array "dynamicVariants" beserta persentasenya.
+ADDITIONAL TASK: Extract or estimate 6 most popular variants/attributes (such as model, size, material, or color) for product "${query}" in the market, then insert them into the "dynamicVariants" array along with their percentages.
 
-DATA MENTAH:
+RAW DATA:
 ${dataSummary}
 
-Berikan 3 strategi utama, 5 insights, dan 5 action plans berdasarkan data di atas. Harga optimal harus berdasarkan analisis distribusi harga dan kompetisi. Hasilkan 'demandAndTiming' dengan estimasi data tren pencarian bulanan (12 bulan, 0.0 - 1.0) dan hari/jam terbaik untuk listing berdasarkan jenis produk ini. Pastikan semua rekomendasi spesifik dan actionable.`;
+Provide 3 main strategies, 5 insights, and 5 action plans based on the data above. The optimal price should be based on price distribution and competition analysis. Generate demandAndTiming with estimated monthly search trend data (12 months, 0.0 - 1.0) and best day/time for listing based on this product type. Ensure all recommendations are specific and actionable.`;
 
     console.log('🤖 Requesting DeepSeek AI analysis...');
 

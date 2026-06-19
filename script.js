@@ -276,7 +276,7 @@ function updateDashboard(data, query, location) {
     } else {
         const barrier = data.entryBarrier;
         const level = barrier > 70 ? 'tinggi' : barrier > 40 ? 'sedang' : 'rendah';
-        const levelDisplay = barrier > 70 ? 'Tinggi' : barrier > 40 ? 'Sedang' : 'Rendah';
+        const levelDisplay = barrier > 70 ? 'High' : barrier > 40 ? 'Medium' : 'Low';
         barrierGauge.style.setProperty('--value', barrier);
         barrierGauge.setAttribute('data-level', level);
         barrierScoreEl.textContent = barrier;
@@ -316,7 +316,7 @@ function updateDashboard(data, query, location) {
     document.getElementById('focus-bin').innerHTML =
         `<i data-lucide="shopping-cart"></i><span>BIN vs Auction: <strong>${data.buyingOptions.binPercentage}% Buy It Now</strong></span>`;
     document.getElementById('focus-sellers').innerHTML =
-        `<i data-lucide="users"></i><span>Unique Sellers: <strong>${data.sellers.unique} penjual</strong></span>`;
+        `<i data-lucide="users"></i><span>Unique Sellers: <strong>${data.sellers.unique} sellers</strong></span>`;
 
     // 6. Charts & Heatmap
     updateCharts(data);
@@ -331,9 +331,9 @@ function updateDashboard(data, query, location) {
     // Competition insights
     const top3Share = data.sellers.top.slice(0, 3).reduce((sum, s) => sum + s.percentage, 0);
     const concentrationEl = document.getElementById('insight-market-concentration');
-    concentrationEl.textContent = `${top3Share > 50 ? 'Tinggi' : 'Sedang'} (Top 3 = ${top3Share}%)`;
+    concentrationEl.textContent = `${top3Share > 50 ? 'High' : 'Medium'} (Top 3 = ${top3Share}%)`;
     concentrationEl.className = `value ${top3Share > 50 ? 'negative' : 'positive'}`;
-    document.getElementById('insight-unique-sellers').textContent = `${data.sellers.unique} penjual`;
+    document.getElementById('insight-unique-sellers').textContent = `${data.sellers.unique} sellers`;
 
     // 8. Geographic Supply & Demand
     updateGeography(data.geography);
@@ -382,8 +382,8 @@ function generateStrategies(data, query, sym) {
     // Price strategy
     if (data.pricing.median < data.pricing.avg) {
         strategies.push({
-            title: 'Harga Kompetitif',
-            desc: `Harga median (${sym}${formatNumber(data.pricing.median)}) lebih rendah dari rata-rata. Listing di ${sym}${formatNumber(data.pricing.optimal)} memberikan margin optimal.`
+            title: 'Price Kompetitif',
+            desc: `Price median (${sym}${formatNumber(data.pricing.median)}) lebih rendah dari rata-rata. Listing di ${sym}${formatNumber(data.pricing.optimal)} memberikan margin optimal.`
         });
     } else {
         strategies.push({
@@ -409,12 +409,12 @@ function generateStrategies(data, query, sym) {
     if (data.sellers.unique < 10) {
         strategies.push({
             title: 'Pasar Niche',
-            desc: `Hanya ${data.sellers.unique} penjual aktif. Kesempatan untuk mendominasi dengan listing berkualitas tinggi.`
+            desc: `Hanya ${data.sellers.unique} sellers aktif. Kesempatan untuk mendominasi dengan listing berkualitas tinggi.`
         });
     } else {
         strategies.push({
             title: 'Diferensiasi',
-            desc: `${data.sellers.unique} penjual aktif. Fokus pada foto HD, deskripsi detail, dan free shipping untuk menonjol.`
+            desc: `${data.sellers.unique} sellers aktif. Fokus pada foto HD, deskripsi detail, dan free shipping untuk menonjol.`
         });
     }
 
@@ -436,7 +436,7 @@ function updateCharts(data) {
         data: {
             labels: data.pricing.distribution.map(b => b.label),
             datasets: [{
-                label: 'Jumlah Listing',
+                label: 'Count Listing',
                 data: data.pricing.distribution.map(b => b.count),
                 backgroundColor: c.primaryColor,
                 borderRadius: 4,
@@ -586,7 +586,7 @@ function initEmptyCharts() {
     competitionChart = new Chart(ctxComp, {
         type: 'doughnut',
         data: {
-            labels: ['Menunggu data'],
+            labels: ['Waiting for data'],
             datasets: [{ data: [1], backgroundColor: [c.bgTertiary], borderWidth: 0 }]
         },
         options: {
@@ -599,7 +599,7 @@ function initEmptyCharts() {
     variantChart = new Chart(ctxVariant, {
         type: 'bar',
         data: {
-            labels: ['Menunggu data'],
+            labels: ['Waiting for data'],
             datasets: [{ label: 'Data', data: [0], backgroundColor: [c.bgTertiary], borderRadius: 4, barThickness: 16 }]
         },
         options: {
@@ -634,7 +634,7 @@ function updateGeography(geoData) {
     // Update alert based on top location
     const topRegion = geoData[0];
     geoAlert.className = 'alert-box info';
-    geoAlert.innerHTML = `<i data-lucide="info"></i><span>Region terbesar (Sellers): ${topRegion.region} (${topRegion.percentage}% dari total listing).</span>`;
+    geoAlert.innerHTML = `<i data-lucide="info"></i><span>Largest region (Sellers): ${topRegion.region} (${topRegion.percentage}% dari total listing).</span>`;
 }
 
 function updateDemandGeography(geoData) {
@@ -642,7 +642,7 @@ function updateDemandGeography(geoData) {
     const geoAlert = document.getElementById('geo-demand-alert');
 
     if (!geoData || geoData.length === 0) {
-        geoList.innerHTML = '<div class="geo-item"><span class="region">Tidak ada data tren pencarian</span><div class="progress-bar"><div class="fill" style="width:0%"></div></div><span class="percentage">—</span></div>';
+        geoList.innerHTML = '<div class="geo-item"><span class="region">No search trend data</span><div class="progress-bar"><div class="fill" style="width:0%"></div></div><span class="percentage">—</span></div>';
         geoAlert.className = 'alert-box warning';
         geoAlert.innerHTML = `<i data-lucide="alert-triangle"></i><span>Google Trends API tidak mengembalikan data untuk query ini.</span>`;
         return;
@@ -658,7 +658,7 @@ function updateDemandGeography(geoData) {
 
     const topRegion = geoData[0];
     geoAlert.className = 'alert-box positive';
-    geoAlert.innerHTML = `<i data-lucide="search"></i><span>Demand tertinggi berasal dari: ${topRegion.region}. Targetkan iklan (Ads) ke negara ini.</span>`;
+    geoAlert.innerHTML = `<i data-lucide="search"></i><span>Highest demand comes from: ${topRegion.region}. Targetkan iklan (Ads) ke negara ini.</span>`;
 }
 
 // ── Update Keywords ─────────────────────────────────────────────────
@@ -770,9 +770,9 @@ function updateConclusion(data, query, sym) {
             insights.push(`Mix auction/BIN menunjukkan pasar yang dinamis. Pertimbangkan auction untuk item langka.`);
         }
         if (data.sellers.unique < 15) {
-            insights.push(`Hanya ${data.sellers.unique} penjual unik — pasar ini belum terlalu ramai, peluang bagus.`);
+            insights.push(`Hanya ${data.sellers.unique} sellers unik — pasar ini belum terlalu ramai, peluang bagus.`);
         } else {
-            insights.push(`${data.sellers.unique} penjual aktif menunjukkan pasar yang kompetitif. Diferensiasi adalah kunci.`);
+            insights.push(`${data.sellers.unique} sellers aktif menunjukkan pasar yang kompetitif. Diferensiasi adalah kunci.`);
         }
         if (data.geography.length > 0) {
             insights.push(`Region dominan: ${data.geography[0].region} (${data.geography[0].percentage}%). Sesuaikan shipping dan targeting.`);
@@ -826,7 +826,7 @@ function generateHeatmap(aiTimingData = null) {
         if (aiTimingData.optimalDay) document.getElementById('insight-optimal-day').textContent = aiTimingData.optimalDay;
         if (aiTimingData.optimalTime) document.getElementById('insight-optimal-time').textContent = aiTimingData.optimalTime;
     } else {
-        document.getElementById('insight-optimal-day').textContent = 'Minggu';
+        document.getElementById('insight-optimal-day').textContent = 'Sunday';
         document.getElementById('insight-optimal-time').textContent = '19:00 - 21:00';
     }
     
