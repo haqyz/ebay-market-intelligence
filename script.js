@@ -208,7 +208,8 @@ async function runAnalysis() {
         hideLoading();
 
         // Show live badge
-        document.getElementById('live-badge').classList.add('visible');
+        const liveBadge = document.getElementById('live-badge');
+        if (liveBadge) liveBadge.classList.add('visible');
 
     } catch (err) {
         console.error('Analysis error:', err);
@@ -305,7 +306,7 @@ function updateDashboard(data, query, location) {
 
     // Show AI badge if AI data is present
     const aiBadge = document.getElementById('ai-badge');
-    if (data.ai) {
+    if (data.ai && aiBadge) {
         aiBadge.style.backgroundColor = 'var(--accent-positive-bg)';
         aiBadge.style.color = 'var(--accent-positive)';
         aiBadge.style.borderColor = 'var(--accent-positive)';
