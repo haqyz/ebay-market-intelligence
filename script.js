@@ -335,8 +335,13 @@ function updateDashboard(data, query, location) {
     concentrationEl.className = `value ${top3Share > 50 ? 'negative' : 'positive'}`;
     document.getElementById('insight-unique-sellers').textContent = `${data.sellers.unique} penjual`;
 
-    // 8. Geographic Demand
+    // 8. Geographic Supply & Demand
     updateGeography(data.geography);
+    if (data.googleTrends) {
+        updateDemandGeography(data.googleTrends);
+    } else {
+        updateDemandGeography([]);
+    }
 
     // 9. Keywords
     updateKeywords(data.keywords, query, data.ai);
@@ -616,7 +621,31 @@ function updateGeography(geoData) {
     // Update alert based on top location
     const topRegion = geoData[0];
     geoAlert.className = 'alert-box info';
-    geoAlert.innerHTML = `<i data-lucide="info"></i><span>Region terbesar: ${topRegion.region} (${topRegion.percentage}% dari total listing). Targetkan shipping dan keyword ke region ini.</span>`;
+    geoAlert.innerHTML = `<i data-lucide="info"></i><span>Region terbesar (Sellers): ${topRegion.region} (${topRegion.percentage}% dari total listing).</span>`;
+}
+
+function updateDemandGeography(geoData) {
+    const geoList = document.getElementById('geo-demand-list');
+    const geoAlert = document.getElementById('geo-demand-alert');
+
+    if (!geoData || geoData.length === 0) {
+        geoList.innerHTML = '<div class="geo-item"><span class="region">Tidak ada data tren pencarian</span><div class="progress-bar"><div class="fill" style="width:0%"></div></div><span class="percentage">—</span></div>';
+        geoAlert.className = 'alert-box warning';
+        geoAlert.innerHTML = `<i data-lucide="alert-triangle"></i><span>Google Trends API tidak mengembalikan data untuk query ini.</span>`;
+        return;
+    }
+
+    geoList.innerHTML = geoData.map(loc => `
+        <div class="geo-item">
+            <span class="region" title="${loc.region}">${loc.region}</span>
+            <div class="progress-bar"><div class="fill" style="width: ${loc.percentage}%"></div></div>
+            <span class="percentage">${loc.percentage}%</span>
+        </div>
+    `).join('');
+
+    const topRegion = geoData[0];
+    geoAlert.className = 'alert-box positive';
+    geoAlert.innerHTML = `<i data-lucide="search"></i><span>Demand tertinggi berasal dari: ${topRegion.region}. Targetkan iklan (Ads) ke negara ini.</span>`;
 }
 
 // ── Update Keywords ─────────────────────────────────────────────────

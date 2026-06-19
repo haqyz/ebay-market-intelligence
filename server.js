@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const googleTrends = require('google-trends-api');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -731,6 +732,35 @@ app.get('/api/stats', async (req, res) => {
 
         // Merge AI analysis into response
         analytics.ai = aiAnalysis;
+
+        // Fetch Google Trends Demand
+        let googleTrendsDemand = [];
+        try {
+            console.log('📈 Fetching Google Trends demand...');
+            const trendsRes = await googleTrends.interestByRegion({ keyword: q, resolution: 'COUNTRY' });
+            const trendsData = JSON.parse(trendsRes);
+            if (trendsData && trendsData.default && trendsData.default.geoMapData) {
+                googleTrendsDemand = trendsData.default.geoMapData
+                    .filter(geo => geo.hasData && geo.value[0] > 0)
+                    .sort((a, b) => b.value[0] - a.value[0])
+                    .slice(0, 5)
+                    .map(geo => ({
+                        region: geo.geoName,
+                        percentage: geo.value[0]
+                    }));
+                
+                const totalScore = googleTrendsDemand.reduce((sum, item) => sum + item.percentage, 0);
+                if (totalScore > 0) {
+                    googleTrendsDemand = googleTrendsDemand.map(item => ({
+                        region: item.region,
+                        percentage: Math.round((item.percentage / totalScore) * 100)
+                    }));
+                }
+            }
+        } catch (trendErr) {
+            console.warn('⚠️ Google Trends API failed:', trendErr.message);
+        }
+        analytics.googleTrends = googleTrendsDemand;
 
         console.log(`✅ Analytics complete: ${analytics.totalItems} items processed ${aiAnalysis ? '+ AI insights' : '(no AI)'}`);
         console.log(`${'─'.repeat(60)}\n`);
