@@ -296,7 +296,7 @@ function updateDashboard(data, query, location) {
         document.getElementById('metric-trust').textContent = data.barrierMetrics.avgFeedback > 0 ? Math.round(data.barrierMetrics.avgFeedback).toLocaleString() : 'N/A';
         document.getElementById('metric-shipping').textContent = data.barrierMetrics.freeShippingPercentage + '%';
         const sym = data.currency === 'USD' ? '$' : data.currency === 'GBP' ? '£' : '€';
-        document.getElementById('metric-capital').textContent = sym + Math.round(data.barrierMetrics.capitalRequirement).toLocaleString();
+        document.getElementById('metric-capital').textContent = sym + Math.round(data.barrierMetrics.unitCapitalRisk).toLocaleString();
         document.getElementById('metric-velocity').textContent = data.barrierMetrics.recentListingsPercentage + '%';
     } else {
         document.getElementById('barrier-metrics-grid').style.display = 'none';

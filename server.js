@@ -489,8 +489,8 @@ function processAnalytics(items, query) {
     });
     const freeShippingPercentage = items.length > 0 ? Math.round((freeShippingCount / items.length) * 100) : 0;
 
-    // Capital Requirement (Assumed 10 items minimum stock)
-    const capitalRequirement = medianPrice * 10;
+    // Unit Capital Risk (Assumed from median price, 1 unit)
+    const unitCapitalRisk = medianPrice;
 
     // Market Saturation / Listing Velocity
     let recentListingsCount = 0;
@@ -515,8 +515,8 @@ function processAnalytics(items, query) {
     if (avgFeedback > 10000) entryBarrier += 15;
     else if (avgFeedback > 1000) entryBarrier += 5;
 
-    if (capitalRequirement > 1000) entryBarrier += 15;
-    else if (capitalRequirement < 100) entryBarrier -= 10;
+    if (unitCapitalRisk > 100) entryBarrier += 15;
+    else if (unitCapitalRisk < 10) entryBarrier -= 10;
 
     if (freeShippingPercentage > 70) entryBarrier += 10;
 
@@ -582,7 +582,7 @@ function processAnalytics(items, query) {
         barrierMetrics: {
             avgFeedback,
             freeShippingPercentage,
-            capitalRequirement: Math.round(capitalRequirement * 100) / 100,
+            unitCapitalRisk: Math.round(unitCapitalRisk * 100) / 100,
             recentListingsPercentage
         },
 
@@ -637,7 +637,7 @@ LOGISTIK & ONGKIR:
 - Persentase Gratis Ongkir: ${analytics.barrierMetrics.freeShippingPercentage}%
 
 MODAL & SATURASI:
-- Estimasi Modal Awal (10 pcs): ${sym}${analytics.barrierMetrics.capitalRequirement}
+- Estimasi Nilai per Unit: ${sym}${analytics.barrierMetrics.unitCapitalRisk}
 - Listing Baru (7 hari terakhir): ${analytics.barrierMetrics.recentListingsPercentage}%
 `;
 
