@@ -208,8 +208,7 @@ async function runAnalysis() {
         hideLoading();
 
         // Show live badge
-        const liveBadge = document.getElementById('live-badge');
-        if (liveBadge) liveBadge.classList.add('visible');
+        document.getElementById('live-badge').classList.add('visible');
 
     } catch (err) {
         console.error('Analysis error:', err);
@@ -291,6 +290,18 @@ function updateDashboard(data, query, location) {
         barrierDesc.textContent = barrierDescMap[level];
     }
 
+    // Populate new barrier metrics if available
+    if (data.barrierMetrics) {
+        document.getElementById('barrier-metrics-grid').style.display = 'grid';
+        document.getElementById('metric-trust').textContent = data.barrierMetrics.avgFeedback > 0 ? Math.round(data.barrierMetrics.avgFeedback).toLocaleString() : 'N/A';
+        document.getElementById('metric-shipping').textContent = data.barrierMetrics.freeShippingPercentage + '%';
+        const sym = data.currency === 'USD' ? '$' : data.currency === 'GBP' ? '£' : '€';
+        document.getElementById('metric-capital').textContent = sym + Math.round(data.barrierMetrics.capitalRequirement).toLocaleString();
+        document.getElementById('metric-velocity').textContent = data.barrierMetrics.recentListingsPercentage + '%';
+    } else {
+        document.getElementById('barrier-metrics-grid').style.display = 'none';
+    }
+
     // 4. Strategy List — prefer AI strategies
     const strategyList = document.getElementById('strategy-list');
     if (data.ai && data.ai.strategies && data.ai.strategies.length > 0) {
@@ -306,7 +317,7 @@ function updateDashboard(data, query, location) {
 
     // Show AI badge if AI data is present
     const aiBadge = document.getElementById('ai-badge');
-    if (data.ai && aiBadge) {
+    if (data.ai) {
         aiBadge.style.backgroundColor = 'var(--accent-positive-bg)';
         aiBadge.style.color = 'var(--accent-positive)';
         aiBadge.style.borderColor = 'var(--accent-positive)';

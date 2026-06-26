@@ -466,13 +466,64 @@ function processAnalytics(items, query) {
         .slice(0, 6)
         .map(([name, count]) => ({ name, count }));
 
-    // Calculate entry barrier score (0-100)
+    // Trust Barrier (Average Feedback Score)
+    let totalFeedback = 0;
+    let feedbackCount = 0;
+    items.forEach(item => {
+        if (item.seller && item.seller.feedbackScore !== undefined) {
+            totalFeedback += parseInt(item.seller.feedbackScore);
+            feedbackCount++;
+        }
+    });
+    const avgFeedback = feedbackCount > 0 ? Math.round(totalFeedback / feedbackCount) : 0;
+
+    // Shipping Complexity (Free Shipping Percentage)
+    let freeShippingCount = 0;
+    items.forEach(item => {
+        if (item.shippingOptions && item.shippingOptions.length > 0) {
+            const cost = item.shippingOptions[0].shippingCost;
+            if (cost && parseFloat(cost.value) === 0) {
+                freeShippingCount++;
+            }
+        }
+    });
+    const freeShippingPercentage = items.length > 0 ? Math.round((freeShippingCount / items.length) * 100) : 0;
+
+    // Capital Requirement (Assumed 10 items minimum stock)
+    const capitalRequirement = medianPrice * 10;
+
+    // Market Saturation / Listing Velocity
+    let recentListingsCount = 0;
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    items.forEach(item => {
+        if (item.itemCreationDate) {
+            const creationDate = new Date(item.itemCreationDate);
+            if (creationDate >= sevenDaysAgo) {
+                recentListingsCount++;
+            }
+        }
+    });
+    const recentListingsPercentage = items.length > 0 ? Math.round((recentListingsCount / items.length) * 100) : 0;
+
+    // Calculate fallback entry barrier score (0-100)
     const sellerDiversity = Math.min(uniqueSellers / items.length, 1);
-    const entryBarrier = Math.round(
-        50 +
-        (sellerDiversity < 0.3 ? 30 : sellerDiversity < 0.6 ? 15 : 0) -
-        (uniqueSellers > 20 ? 20 : 0)
-    );
+    let entryBarrier = 50 +
+        (sellerDiversity < 0.3 ? 20 : sellerDiversity < 0.6 ? 10 : 0) -
+        (uniqueSellers > 20 ? 10 : 0);
+
+    if (avgFeedback > 10000) entryBarrier += 15;
+    else if (avgFeedback > 1000) entryBarrier += 5;
+
+    if (capitalRequirement > 1000) entryBarrier += 15;
+    else if (capitalRequirement < 100) entryBarrier -= 10;
+
+    if (freeShippingPercentage > 70) entryBarrier += 10;
+
+    if (recentListingsPercentage > 20) entryBarrier += 10;
+    else if (recentListingsPercentage < 5) entryBarrier -= 5;
+
+    entryBarrier = Math.round(entryBarrier);
 
     // Optimal price recommendation (median + small margin)
     const optimalPrice = medianPrice * 1.05;
@@ -528,6 +579,13 @@ function processAnalytics(items, query) {
 
         variants: topVariants,
 
+        barrierMetrics: {
+            avgFeedback,
+            freeShippingPercentage,
+            capitalRequirement: Math.round(capitalRequirement * 100) / 100,
+            recentListingsPercentage
+        },
+
         entryBarrier: Math.min(Math.max(entryBarrier, 10), 95),
 
         sampleItems: sampleItems
@@ -567,12 +625,20 @@ TIPE LISTING:
 PENJUAL:
 - Total unik: ${analytics.sellers.unique}
 - Top sellers: ${analytics.sellers.top.map(s => `${s.name} (${s.count} listing, ${s.percentage}%)`).join(', ')}
+- Rata-rata Feedback Score: ${analytics.barrierMetrics.avgFeedback}
 
 LOKASI: ${analytics.geography.map(g => `${g.region}: ${g.percentage}%`).join(', ')}
 
 KEYWORDS POPULER: ${analytics.keywords.map(k => `"${k.word}" (${k.count}x)`).join(', ')}
 
 VARIAN: ${analytics.variants.map(v => `${v.name} (${v.count})`).join(', ')}
+
+LOGISTIK & ONGKIR:
+- Persentase Gratis Ongkir: ${analytics.barrierMetrics.freeShippingPercentage}%
+
+MODAL & SATURASI:
+- Estimasi Modal Awal (10 pcs): ${sym}${analytics.barrierMetrics.capitalRequirement}
+- Listing Baru (7 hari terakhir): ${analytics.barrierMetrics.recentListingsPercentage}%
 `;
 
     const systemPrompt = `Kamu adalah AI Market Intelligence Analyst yang sangat ahli di eBay marketplace. Kamu menganalisis data pasar dan memberikan rekomendasi yang actionable untuk penjual.

@@ -63,6 +63,14 @@
             <span>NEXUS<span class="accent">ANALYTICS</span></span>
         </div>
         <div class="header-right">
+            <div class="live-badge" id="live-badge">
+                <div class="live-dot"></div>
+                <span>LIVE DATA</span>
+            </div>
+            <div class="live-badge" id="ai-badge"
+                style="background-color: var(--bg-tertiary); color: var(--text-secondary); border-color: var(--border-color);">
+                <span>🤖 AI</span>
+            </div>
             <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
                 <i data-lucide="moon"></i>
             </button>
@@ -171,7 +179,7 @@
                 </div>
                 <!-- Level badge -->
                 <div class="barrier-level-row">
-                    <span class="barrier-level-badge" id="barrier-level-badge">Waiting for data...pan>
+                    <span class="barrier-level-badge" id="barrier-level-badge">Waiting for data...</span>
                 </div>
                 <!-- Zone labels -->
                 <div class="barrier-zone-labels">
@@ -180,6 +188,26 @@
                     <span class="zone-label zone-high-label">High</span>
                 </div>
                 <p class="barrier-desc" id="barrier-desc">Waiting for data analysis...</p>
+                
+                <!-- Supporting Metrics for Entry Barrier -->
+                <div class="barrier-metrics-grid" id="barrier-metrics-grid" style="display: none; margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="barrier-metric" style="display: flex; flex-direction: column;">
+                        <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Avg Seller Feedback</span>
+                        <span id="metric-trust" style="font-weight: 600; color: var(--text-primary); font-size: 14px;">—</span>
+                    </div>
+                    <div class="barrier-metric" style="display: flex; flex-direction: column;">
+                        <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Free Shipping</span>
+                        <span id="metric-shipping" style="font-weight: 600; color: var(--text-primary); font-size: 14px;">—</span>
+                    </div>
+                    <div class="barrier-metric" style="display: flex; flex-direction: column;">
+                        <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Est. Capital (10x)</span>
+                        <span id="metric-capital" style="font-weight: 600; color: var(--text-primary); font-size: 14px;">—</span>
+                    </div>
+                    <div class="barrier-metric" style="display: flex; flex-direction: column;">
+                        <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">New Listings (7d)</span>
+                        <span id="metric-velocity" style="font-weight: 600; color: var(--text-primary); font-size: 14px;">—</span>
+                    </div>
+                </div>
             </div>
 
             <div class="summary-card strategy-card">
